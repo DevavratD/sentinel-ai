@@ -1,109 +1,205 @@
-import { getRecentSessions, getActionsForSession } from "@/lib/db";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ShieldAlert, Fingerprint, Activity, Clock } from "lucide-react";
+import { getRecentSessions, getAllActions } from "@/lib/db";
+import { ShieldAlert, Fingerprint, Activity, Clock, Terminal, AlertTriangle, Key, Cpu, Info } from "lucide-react";
 
-// Server component polling could be done, but for MVP we render statically/revalidated.
 export const revalidate = 0; // Disable cache for live feed feel
 
 export default async function DefenderDashboard() {
   const sessions = await getRecentSessions();
+  const allActions = await getAllActions();
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6 max-w-7xl mx-auto w-full">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Defender Dashboard</h2>
-        <div className="flex items-center space-x-2">
-          <Badge variant="outline" className="px-3 py-1 font-mono text-xs">
-            LIVE MONITORING
-          </Badge>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="glass-panel">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Login Attempts</CardTitle>
-            <Activity className="h-4 w-4 text-zinc-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{sessions.length}</div>
-          </CardContent>
-        </Card>
-        <Card className="glass-panel border-red-900/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-red-500">Threats Neutralized</CardTitle>
-            <ShieldAlert className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-500">
-              {sessions.filter(s => s.routedToDecoy).length}
+    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+      <header className="border-b border-zinc-800 bg-zinc-900/70 backdrop-blur sticky top-0 z-10">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 border border-blue-500/30">
+              <ShieldAlert className="h-4 w-4 text-blue-400" />
             </div>
-            <p className="text-xs text-red-400/80">Routed to Decoy App</p>
-          </CardContent>
-        </Card>
-      </div>
+            <h1 className="text-xl font-bold text-zinc-100 tracking-tight">SentinelAI <span className="text-zinc-500 font-normal">| Defender console</span></h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-xs text-red-400 font-mono tracking-wider">
+              <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+              LIVE TELEMETRY
+            </div>
+          </div>
+        </div>
+      </header>
 
-      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-1 mt-4">
-        <Card className="glass-panel">
-          <CardHeader>
-            <CardTitle>Recent Authentication Telemetry</CardTitle>
-            <CardDescription>
-              Real-time feed of authentication attempts analyzed by SentinelAI.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+      <main className="mx-auto max-w-[1600px] px-6 py-8 space-y-6">
+        {/* KPI Row */}
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Activity className="h-4 w-4 text-zinc-400" />
+              <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Total Scanned</p>
+            </div>
+            <p className="text-3xl font-bold">{sessions.length}</p>
+          </div>
+          <div className="rounded-xl border border-red-900/50 bg-red-950/20 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <ShieldAlert className="h-4 w-4 text-red-400" />
+              <p className="text-xs font-medium text-red-400 uppercase tracking-wider">Decoys Deployed</p>
+            </div>
+            <p className="text-3xl font-bold text-red-400">{sessions.filter(s => s.routedToDecoy).length}</p>
+          </div>
+          <div className="rounded-xl border border-amber-900/50 bg-amber-950/20 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Terminal className="h-4 w-4 text-amber-400" />
+              <p className="text-xs font-medium text-amber-400 uppercase tracking-wider">Adversary Actions Captured</p>
+            </div>
+            <p className="text-3xl font-bold text-amber-400">{allActions.length}</p>
+          </div>
+          <div className="rounded-xl border border-emerald-900/50 bg-emerald-950/20 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Fingerprint className="h-4 w-4 text-emerald-400" />
+              <p className="text-xs font-medium text-emerald-400 uppercase tracking-wider">Legit Authorized</p>
+            </div>
+            <p className="text-3xl font-bold text-emerald-400">{sessions.filter(s => !s.routedToDecoy).length}</p>
+          </div>
+        </div>
+
+        {/* Sessions Feed */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
+            <Cpu className="h-5 w-5 text-blue-400" /> Identity Risk Feed
+          </h2>
+
+          {sessions.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-zinc-800 p-12 text-center text-zinc-500 font-mono text-sm">
+              [ WAITING FOR TELEMETRY DATA ]
+            </div>
+          ) : (
             <div className="space-y-4">
-              {sessions.length === 0 ? (
-                <div className="text-center text-zinc-500 py-4 font-mono text-sm">
-                  [ No telemetry data captured yet ]
-                </div>
-              ) : (
-                sessions.map((session) => (
-                  <div
-                    key={session.id}
-                    className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/50 p-4"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className={`mt-1 p-2 rounded-full ${session.routedToDecoy ? 'bg-red-900/30' : 'bg-green-900/30'}`}>
-                        {session.routedToDecoy ? (
-                          <ShieldAlert className="h-4 w-4 text-red-500" />
+              {sessions.map((session) => {
+                const sessionActions = allActions.filter(a => a.sessionId === session.id);
+                const isHighRisk = session.riskScore >= 70;
+                const isMediumRisk = session.riskScore >= 40 && session.riskScore < 70;
+
+                return (
+                  <div key={session.id} className={`rounded-xl border bg-zinc-900/60 overflow-hidden transition-all hover:border-zinc-700
+                    ${session.routedToDecoy ? 'border-red-900/30' : 'border-emerald-900/30'}
+                  `}>
+                    <div className="p-5 flex flex-col lg:flex-row gap-6">
+                      
+                      {/* Left Column: Core Identity & Context (approx 30%) */}
+                      <div className="lg:w-1/3 space-y-4 border-b lg:border-b-0 lg:border-r border-zinc-800 pb-4 lg:pb-0 lg:pr-6">
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-2">
+                            {session.routedToDecoy ? (
+                              <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20">
+                                <ShieldAlert className="h-5 w-5 text-red-500" />
+                              </div>
+                            ) : (
+                              <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                                <Fingerprint className="h-5 w-5 text-emerald-500" />
+                              </div>
+                            )}
+                            <div>
+                              <p className="font-bold text-zinc-100 font-mono text-lg">{session.username}</p>
+                              <p className="text-xs text-zinc-400 flex items-center gap-1">
+                                <Clock className="h-3 w-3" /> {new Date(session.timestamp).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between border-b border-zinc-800/50 pb-1">
+                            <span className="text-zinc-500">Source IP</span>
+                            <span className="font-mono text-zinc-300">{session.ip}</span>
+                          </div>
+                          <div className="flex justify-between border-b border-zinc-800/50 pb-1">
+                            <span className="text-zinc-500">Captured Password</span>
+                            <span className="font-mono text-zinc-300">{session.passwordMasked}</span>
+                          </div>
+                          <div className="flex justify-between pb-1">
+                            <span className="text-zinc-500">Routing</span>
+                            {session.routedToDecoy ? (
+                              <span className="text-red-400 font-medium tracking-wide">DECOY APP</span>
+                            ) : (
+                              <span className="text-emerald-400 font-medium tracking-wide">REAL APP</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Middle Column: Engine Scoring (approx 35%) */}
+                      <div className="lg:w-1/3 space-y-4 border-b lg:border-b-0 lg:border-r border-zinc-800 pb-4 lg:pb-0 lg:pr-6">
+                        <div>
+                          <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Engine Risk Analysis</p>
+                          <div className="flex items-end gap-3">
+                            <span className={`text-4xl font-bold font-mono tracking-tighter ${isHighRisk ? 'text-red-500' : isMediumRisk ? 'text-amber-500' : 'text-emerald-500'}`}>
+                              {session.riskScore}
+                            </span>
+                            <span className="text-zinc-500 font-mono mb-1">/ 100</span>
+                            
+                            <span className={`mb-1.5 ml-auto px-2 py-0.5 rounded text-xs font-bold uppercase tracking-widest ${isHighRisk ? 'bg-red-500/20 text-red-500' : isMediumRisk ? 'bg-amber-500/20 text-amber-500' : 'bg-emerald-500/20 text-emerald-500'}`}>
+                              {session.riskLevel}
+                            </span>
+                          </div>
+                        </div>
+
+                        {session.aiExplanation && (
+                          <div className="mt-4 rounded border border-zinc-800 bg-zinc-950/50 p-3">
+                            <div className="flex items-start gap-2">
+                              <Info className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                              <p className="text-xs text-zinc-300 leading-relaxed">{session.aiExplanation}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {session.cveMapping && (
+                          <div className="mt-2 rounded border border-purple-500/20 bg-purple-500/5 p-2">
+                            <div className="flex items-start gap-2">
+                              <AlertTriangle className="h-4 w-4 text-purple-400 mt-0.5 flex-shrink-0" />
+                              <div>
+                                <p className="text-xs font-semibold text-purple-400">Contextual CVE Mapping</p>
+                                <p className="text-xs text-purple-300 mt-0.5">{session.cveMapping}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Right Column: Attacker Actions (approx 35%) */}
+                      <div className="lg:w-1/3 flex flex-col">
+                        <p className="text-xs text-zinc-500 uppercase tracking-wider mb-3">Attacker Telemetry Log</p>
+                        
+                        {!session.routedToDecoy ? (
+                          <div className="flex-1 rounded border border-dashed border-emerald-900/30 bg-emerald-950/10 p-4 flex items-center justify-center text-center">
+                            <p className="text-xs text-emerald-500 font-mono">Session routed to real application.<br/>No deception telemetry available.</p>
+                          </div>
+                        ) : sessionActions.length === 0 ? (
+                          <div className="flex-1 rounded border border-dashed border-zinc-800 bg-zinc-950/30 p-4 flex items-center justify-center text-center">
+                            <p className="text-xs text-zinc-500 font-mono">Awaiting adversary interactions inside the decoy sandbox...</p>
+                          </div>
                         ) : (
-                          <Fingerprint className="h-4 w-4 text-green-500" />
+                          <div className="flex-1 max-h-[220px] overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+                            {sessionActions.map((action, i) => (
+                              <div key={action.id} className="relative pl-4 border-l-2 border-amber-500/30 pb-3 last:pb-0">
+                                <div className="absolute w-2 h-2 rounded-full bg-amber-500 -left-[5px] top-1.5 ring-2 ring-zinc-900" />
+                                <div className="rounded bg-zinc-950/80 border border-zinc-800 p-2 text-xs">
+                                  <div className="flex justify-between items-start mb-1 text-zinc-500 font-mono text-[10px]">
+                                    <span className="uppercase text-amber-500">{action.actionType}</span>
+                                    <span>{new Date(action.timestamp).toLocaleTimeString()}</span>
+                                  </div>
+                                  <p className="text-zinc-300">{action.details}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         )}
                       </div>
-                      <div>
-                        <p className="text-sm font-medium leading-none mb-1">
-                          {session.username}{" "}
-                          <span className="text-zinc-500 text-xs font-mono ml-2">
-                            {session.ip}
-                          </span>
-                        </p>
-                        <p className="text-xs text-zinc-400 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {new Date(session.timestamp).toLocaleString()}
-                        </p>
-                        {session.routedToDecoy && (
-                           <p className="text-xs text-red-400 mt-2">
-                             Risk Score: {session.riskScore}/100 - Triggered Active Deception
-                           </p>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      {session.routedToDecoy ? (
-                        <Badge variant="destructive">Suspicious (Decoy)</Badge>
-                      ) : (
-                        <Badge variant="success">Legitimate (Real)</Badge>
-                      )}
+
                     </div>
                   </div>
-                ))
-              )}
+                );
+              })}
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

@@ -1,20 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { logAction } from '@/lib/db';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { actionType, details } = body;
-    
-    // In a real app we would use a true session cookie to map to sessionId
+    const { sessionId, actionType, details } = body;
+
     await logAction({
-      sessionId: "anonymous-decoy-session",
+      sessionId: sessionId || 'anonymous-decoy-session',
       actionType,
       details,
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+    console.error('Action log error:', error);
+    return NextResponse.json({ error: 'Failed to log action' }, { status: 500 });
   }
 }
