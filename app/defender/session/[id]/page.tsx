@@ -38,7 +38,7 @@ async function AiSummaryPanel({ session }: { session: Session }) {
   try {
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: 'llama3-70b-8192',
+      model: process.env.GROQ_MODEL || 'llama3-70b-8192',
       response_format: { type: 'json_object' }
     });
 

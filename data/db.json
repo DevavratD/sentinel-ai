@@ -1,0 +1,130 @@
+{
+  "sessions": [
+    {
+      "sessionId": "a0a9803a-c011-47dd-8f7e-15369cd849f1",
+      "username": "hacker",
+      "maskedPassword": "a*******d",
+      "route": "decoy",
+      "sessionRisk": 56,
+      "intentScore": 100,
+      "finalRisk": 100,
+      "riskLevel": "High",
+      "reasons": [
+        "CVE-2024-21762 — Out-of-bounds write in SSL VPN authentication allowing unauthenticated RCE."
+      ],
+      "observedIntent": "Session risk assessed as **Medium** (score: 56/100). Risk score indicates a moderate-to-high threat. Session anomalies suggest possible compromised credentials or reconnaissance. SentinelAI routed this session to the isolated environment to analyze intent and assess risk context.",
+      "pagesVisited": [
+        "Navigated to tab: System Logs",
+        "Navigated to tab: Overview",
+        "Navigated to tab: Confidential Files",
+        "Navigated to tab: Employees",
+        "Navigated to tab: System Logs",
+        "Navigated to tab: Overview",
+        "Navigated to tab: Settings",
+        "Navigated to tab: Confidential Files",
+        "Navigated to tab: Employees",
+        "Navigated to tab: Overview",
+        "Navigated to tab: System Logs",
+        "Navigated to tab: Employees",
+        "Navigated to tab: Overview",
+        "Navigated to tab: System Logs",
+        "Navigated to tab: Overview"
+      ],
+      "events": [
+        {
+          "type": "bell_click",
+          "label": "Clicked notifications",
+          "timestamp": "2026-03-28T06:03:49.785Z"
+        },
+        {
+          "type": "employee_view",
+          "label": "Viewed employee: Tom Saunders (EMP-005)",
+          "timestamp": "2026-03-28T06:03:46.645Z"
+        },
+        {
+          "type": "log_entry_view",
+          "label": "Viewed log: 2025-03-27 23:55:10 — Database backup co",
+          "timestamp": "2026-03-28T06:03:43.780Z"
+        },
+        {
+          "type": "log_entry_view",
+          "label": "Viewed log: 2025-03-28 09:14:02 — Admin session open",
+          "timestamp": "2026-03-28T06:03:43.500Z"
+        },
+        {
+          "type": "employee_view",
+          "label": "Viewed employee: Nina Petrov (EMP-004)",
+          "timestamp": "2026-03-28T06:03:39.278Z"
+        },
+        {
+          "type": "employee_view",
+          "label": "Viewed employee: Nina Petrov (EMP-004)",
+          "timestamp": "2026-03-28T06:03:39.224Z"
+        },
+        {
+          "type": "employee_view",
+          "label": "Viewed employee: Carlos Vega (EMP-003)",
+          "timestamp": "2026-03-28T06:03:38.955Z"
+        },
+        {
+          "type": "settings_interaction",
+          "label": "Interacted with setting: Export user database",
+          "timestamp": "2026-03-28T06:03:36.492Z"
+        },
+        {
+          "type": "settings_interaction",
+          "label": "Interacted with setting: Auto-lock inactive sessions",
+          "timestamp": "2026-03-28T06:03:36.247Z"
+        },
+        {
+          "type": "settings_interaction",
+          "label": "Interacted with setting: Enable 2FA enforcement",
+          "timestamp": "2026-03-28T06:03:35.901Z"
+        },
+        {
+          "type": "settings_interaction",
+          "label": "Interacted with setting: Enable 2FA enforcement",
+          "timestamp": "2026-03-28T06:03:35.059Z"
+        },
+        {
+          "type": "stat_card_click",
+          "label": "Clicked Payroll Files",
+          "timestamp": "2026-03-28T06:03:33.187Z"
+        },
+        {
+          "type": "stat_card_click",
+          "label": "Clicked Payroll Files",
+          "timestamp": "2026-03-28T06:03:32.906Z"
+        },
+        {
+          "type": "stat_card_click",
+          "label": "Clicked Payroll Files",
+          "timestamp": "2026-03-28T06:03:32.421Z"
+        },
+        {
+          "type": "download_payroll_q1",
+          "label": "Attempted to download: Payroll_Master_Q1_2025.xlsx",
+          "timestamp": "2026-03-28T06:03:18.831Z"
+        }
+      ],
+      "timestamp": "2026-03-28T06:02:57.820Z"
+    },
+    {
+      "sessionId": "7d6065e6-89c9-4457-a0df-44a138132ffb",
+      "username": "devavratdhaygude09@gmail.com",
+      "maskedPassword": "a***s",
+      "route": "real",
+      "sessionRisk": 15,
+      "intentScore": 0,
+      "finalRisk": 15,
+      "riskLevel": "Low",
+      "reasons": [
+        "Standard authentication profile"
+      ],
+      "observedIntent": "Session risk assessed as **Low** (score: 15/100). Session patterns are within normal parameters. No significant threat indicators detected. Session was authenticated normally and allowed access to the standard application.",
+      "pagesVisited": [],
+      "events": [],
+      "timestamp": "2026-03-28T06:02:33.041Z"
+    }
+  ]
+}
