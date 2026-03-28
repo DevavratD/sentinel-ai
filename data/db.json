@@ -1,6 +1,19 @@
 {
   "sessions": [
     {
+      "id": "5559826f-8640-433d-8311-c64e7ead69bb",
+      "username": "hacker",
+      "passwordMasked": "a***n",
+      "ip": "::1",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+      "riskScore": 100,
+      "riskLevel": "High",
+      "routedToDecoy": true,
+      "cveMapping": "CVE-2024-3094 — Critical authentication backdoor in OpenSSH-related libraries.",
+      "aiExplanation": "Session risk assessed as **High** (score: 100/100). The username \"hacker\" matches a known high-value target pattern (MITRE ATT&CK T1078 — Valid Accounts). Composite risk exceeds threshold. This session exhibits characteristics consistent with credential stuffing or targeted admin account enumeration. SentinelAI routed this session to the Deception Sandbox to capture attacker behavior and fingerprint the threat actor.",
+      "timestamp": "2026-03-28T05:13:35.680Z"
+    },
+    {
       "username": "devavratdhaygude09@gmail.com",
       "ip": "192.168.1.10",
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
@@ -40,6 +53,13 @@
       "details": "User interacted with a decoy element.",
       "id": "3f4c2b42-54aa-48d6-bcb8-be08ac739bb6",
       "timestamp": "2026-03-27T19:52:58.597Z"
+    },
+    {
+      "sessionId": "5559826f-8640-433d-8311-c64e7ead69bb",
+      "actionType": "tab_navigation",
+      "details": "Navigated to tab: System Logs",
+      "id": "c5c7ca87-b9df-4c3a-8df4-011849e97a04",
+      "timestamp": "2026-03-28T05:13:51.881Z"
     }
   ]
 }
