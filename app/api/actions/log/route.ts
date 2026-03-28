@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { logAction } from '@/lib/db';
+import { logEvent } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { sessionId, actionType, details } = body;
 
-    await logAction({
-      sessionId: sessionId || 'anonymous-decoy-session',
-      actionType,
-      details,
+    const isNav = actionType === 'tab_navigation';
+
+    await logEvent(sessionId || 'anonymous-decoy-session', {
+      type: actionType,
+      label: details,
+      isNav,
     });
 
     return NextResponse.json({ success: true });

@@ -1,5 +1,5 @@
 export const decoyConfig = {
-  appName: "Acme Admin Portal",
+  appName: "Demo Admin Portal",
   appType: "internal_admin",
   theme: "corporate_blue",
   modules: ["employees", "reports", "settings"],

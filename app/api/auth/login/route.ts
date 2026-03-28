@@ -13,14 +13,20 @@ const CVE_CONTEXT = [
   { id: "CVE-2024-21762", severity: 9.6, description: "Out-of-bounds write in SSL VPN authentication allowing unauthenticated RCE." },
 ];
 
-function mapCveToSession(riskScore: number): string | null {
-  if (riskScore >= 70) return `${CVE_CONTEXT[0].id} — ${CVE_CONTEXT[0].description}`;
-  if (riskScore >= 50) return `${CVE_CONTEXT[2].id} — ${CVE_CONTEXT[2].description}`;
-  return null;
+function getRiskReasons(riskScore: number, retryCount: number, isSuspiciousName: boolean): string[] {
+  const reasons: string[] = [];
+  if (riskScore >= 70) reasons.push(`${CVE_CONTEXT[0].id} — ${CVE_CONTEXT[0].description}`);
+  else if (riskScore >= 50) reasons.push(`${CVE_CONTEXT[2].id} — ${CVE_CONTEXT[2].description}`);
+
+  if (retryCount > 1) reasons.push("Multiple failed authentications detected");
+  if (isSuspiciousName) reasons.push("High-risk target identifier used");
+  if (reasons.length === 0) reasons.push("Standard authentication profile");
+
+  return reasons;
 }
 
 function generateAiExplanation(username: string, riskScore: number, riskLevel: string, routedToDecoy: boolean, retryCount: number): string {
-  const suspiciousKeywords = ['admin', 'root', 'test', 'hacker'];
+  const suspiciousKeywords = ['admin', 'root', 'test', 'Demo_suspicious'];
   const isSuspiciousName = suspiciousKeywords.some(k => username.toLowerCase().includes(k));
 
   const parts: string[] = [];
@@ -43,9 +49,9 @@ function generateAiExplanation(username: string, riskScore: number, riskLevel: s
   }
 
   if (routedToDecoy) {
-    parts.push(`SentinelAI routed this session to the Deception Sandbox to capture attacker behavior and fingerprint the threat actor.`);
+    parts.push(`SentinelAI routed this session to the isolated environment to analyze intent and assess risk context.`);
   } else {
-    parts.push(`Session was authenticated normally and allowed access to the real application.`);
+    parts.push(`Session was authenticated normally and allowed access to the standard application.`);
   }
 
   return parts.join(' ');
@@ -61,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     const ip = simulatedIp || request.headers.get('x-forwarded-for') || '192.168.1.100';
-    const userAgent = request.headers.get('user-agent') || 'Unknown';
+    // const userAgent = request.headers.get('user-agent') || 'Unknown';
 
     // Track retries
     const currentRetries = ipRetryTracker.get(ip) || 0;
@@ -72,25 +78,29 @@ export async function POST(request: NextRequest) {
 
     const routedToDecoy = riskScore >= 50;
     const route = routedToDecoy ? '/decoy/dashboard' : '/real/dashboard';
-    const cveMapping = mapCveToSession(riskScore);
-    const aiExplanation = generateAiExplanation(username, riskScore, riskLevel, routedToDecoy, retryCount);
+
+    // new context mapping
+    const suspiciousKeywords = ['admin', 'root', 'test', 'Demo_suspicious'];
+    const isSuspiciousName = suspiciousKeywords.some(k => username.toLowerCase().includes(k));
+    const reasons = getRiskReasons(riskScore, retryCount, isSuspiciousName);
+    const observedIntent = generateAiExplanation(username, riskScore, riskLevel, routedToDecoy, retryCount);
 
     const session = await logSession({
       username,
       password,
-      ip,
-      userAgent,
-      riskScore,
-      riskLevel,
-      routedToDecoy,
-      cveMapping,
-      aiExplanation,
+      route: routedToDecoy ? "decoy" : "real",
+      sessionRisk: riskScore,
+      intentScore: 0,
+      finalRisk: riskScore,
+      riskLevel: riskLevel as "Low" | "Medium" | "High",
+      reasons,
+      observedIntent,
     });
 
     return NextResponse.json({
       success: true,
       route,
-      sessionId: session.id,
+      sessionId: session.sessionId,
       riskScore,
       riskLevel,
     });

@@ -68,7 +68,7 @@ export default function RealLogin() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-500/20 bg-blue-500/10 shadow-lg shadow-blue-500/10">
             <ShieldCheck className="h-7 w-7 text-blue-400" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Acme Corp Portal</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Demo Corp Portal</h1>
           <p className="mt-1 text-sm text-zinc-400">Enter your credentials to continue</p>
         </div>
 
@@ -142,7 +142,7 @@ export default function RealLogin() {
               <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-amber-400 mt-0.5" />
               <div className="space-y-2">
                 <p className="text-xs font-medium text-amber-400">Demo Mode</p>
-                <p className="text-xs text-zinc-500">Use <code className="text-amber-400/80">admin</code>, <code className="text-amber-400/80">root</code>, <code className="text-amber-400/80">hacker</code>, or a weak password like <code className="text-amber-400/80">123456</code> for a high-risk session.</p>
+                <p className="text-xs text-zinc-500">Use <code className="text-amber-400/80">admin</code>, <code className="text-amber-400/80">root</code>, <code className="text-amber-400/80">Demo_suspicious</code>, or a weak password like <code className="text-amber-400/80">123456</code> for a high-risk session.</p>
                 <label className="flex items-center gap-2 cursor-pointer mt-1">
                   <input
                     type="checkbox"

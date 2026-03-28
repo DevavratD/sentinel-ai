@@ -13,7 +13,7 @@ export function calculateSessionRisk(input: SessionRiskInput) {
   const targetIdentifier = (input.username || input.email || "").toLowerCase();
 
   // Username checks
-  const suspiciousKeywords = ['admin', 'root', 'test', 'hacker'];
+  const suspiciousKeywords = ['admin', 'root', 'test', 'Demo_suspicious'];
   if (suspiciousKeywords.some(keyword => targetIdentifier.includes(keyword))) {
     sessionRisk += 40;
   }
@@ -43,7 +43,7 @@ export function calculateSessionRisk(input: SessionRiskInput) {
   const exploitLikelihood = sessionRisk >= 40 ? 1.2 : 1.0;
 
   let finalScore = sessionRisk * assetCriticality * exploitLikelihood;
-  
+
   if (finalScore > 100) finalScore = 100;
   if (finalScore < 0) finalScore = 0;
 

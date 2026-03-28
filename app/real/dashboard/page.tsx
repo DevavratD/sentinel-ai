@@ -35,7 +35,7 @@ export default function RealDashboard() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 border border-blue-500/30">
               <Lock className="h-4 w-4 text-blue-400" />
             </div>
-            <span className="font-bold text-zinc-100">Acme Corp</span>
+            <span className="font-bold text-zinc-100">Demo Corp</span>
             <span className="hidden text-xs text-zinc-500 sm:block">|</span>
             <span className="hidden text-xs text-zinc-500 sm:block">Admin Portal</span>
           </div>

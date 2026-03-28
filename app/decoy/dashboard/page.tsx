@@ -127,7 +127,7 @@ export default function DecoyDashboard() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 border border-blue-500/30">
               <Lock className="h-4 w-4 text-blue-400" />
             </div>
-            <span className="font-bold text-zinc-100">Acme Corp</span>
+            <span className="font-bold text-zinc-100">Demo Corp</span>
             <span className="hidden text-xs text-zinc-500 sm:block">|</span>
             <span className="hidden text-xs text-zinc-500 sm:block">Admin Portal</span>
           </div>
@@ -151,11 +151,10 @@ export default function DecoyDashboard() {
               <button
                 key={tab}
                 onClick={() => handleTabChange(tab)}
-                className={`px-4 py-2.5 text-sm font-medium border-b-2 transition whitespace-nowrap ${
-                  activeTab === tab
-                    ? "border-blue-500 text-blue-400"
-                    : "border-transparent text-zinc-500 hover:text-zinc-300"
-                }`}
+                className={`px-4 py-2.5 text-sm font-medium border-b-2 transition whitespace-nowrap ${activeTab === tab
+                  ? "border-blue-500 text-blue-400"
+                  : "border-transparent text-zinc-500 hover:text-zinc-300"
+                  }`}
               >
                 {tab}
               </button>
@@ -278,7 +277,7 @@ export default function DecoyDashboard() {
             <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Terminal className="h-4 w-4 text-emerald-400" />
-                <span className="text-xs font-mono text-emerald-400">acme-admin-log-viewer v3.1.0</span>
+                <span className="text-xs font-mono text-emerald-400">Demo-admin-log-viewer v3.1.0</span>
               </div>
               <div className="space-y-1.5 font-mono text-xs text-zinc-400">
                 {FAKE_LOGS.map((l, i) => (

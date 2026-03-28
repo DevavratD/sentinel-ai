@@ -37,7 +37,7 @@ export default function DecoyLogin() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-500/20 bg-blue-500/10 shadow-lg shadow-blue-500/10">
             <ShieldCheck className="h-7 w-7 text-blue-400" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Acme Corp Portal</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Demo Corp Portal</h1>
           <p className="mt-1 text-sm text-zinc-400">Enter your credentials to continue</p>
         </div>
 

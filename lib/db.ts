@@ -4,31 +4,31 @@ import { v4 as uuidv4 } from "uuid";
 
 const DB_PATH = path.join(process.cwd(), "data", "db.json");
 
-export interface SessionInfo {
-  id: string;
-  username: string;
-  passwordMasked: string;
-  ip: string;
-  userAgent: string;
-  riskScore: number;
-  riskLevel: string;
-  routedToDecoy: boolean;
-  timestamp: string;
-  cveMapping?: string | null;
-  aiExplanation?: string | null;
-}
-
-export interface SuspiciousAction {
-  id: string;
+export type Session = {
   sessionId: string;
-  actionType: string;
-  details: string;
+  username: string;
+  maskedPassword: string;
   timestamp: string;
-}
+  route: "real" | "decoy";
+
+  sessionRisk: number;
+  intentScore: number;
+  finalRisk: number;
+  riskLevel: "Low" | "Medium" | "High";
+
+  reasons: string[];
+  observedIntent: string;
+
+  pagesVisited: string[];
+  events: {
+    type: string;
+    label: string;
+    timestamp: string;
+  }[];
+};
 
 interface DBData {
-  sessions: SessionInfo[];
-  actions: SuspiciousAction[];
+  sessions: Session[];
 }
 
 async function initDB() {
@@ -38,7 +38,7 @@ async function initDB() {
     try {
       await fs.access(DB_PATH);
     } catch {
-      await fs.writeFile(DB_PATH, JSON.stringify({ sessions: [], actions: [] }), "utf-8");
+      await fs.writeFile(DB_PATH, JSON.stringify({ sessions: [] }), "utf-8");
     }
   } catch (error) {
     console.error("DB Init Error:", error);
@@ -51,7 +51,7 @@ export async function readDB(): Promise<DBData> {
     const data = await fs.readFile(DB_PATH, "utf-8");
     return JSON.parse(data);
   } catch {
-    return { sessions: [], actions: [] };
+    return { sessions: [] };
   }
 }
 
@@ -67,20 +67,22 @@ function maskPassword(password: string): string {
 }
 
 export async function logSession(
-  session: Omit<SessionInfo, "id" | "timestamp" | "passwordMasked"> & { password: string }
-): Promise<SessionInfo> {
+  session: Omit<Session, "sessionId" | "timestamp" | "maskedPassword" | "events" | "pagesVisited"> & { password: string }
+): Promise<Session> {
   const db = await readDB();
-  const newSession: SessionInfo = {
-    id: uuidv4(),
+  const newSession: Session = {
+    sessionId: uuidv4(),
     username: session.username,
-    passwordMasked: maskPassword(session.password),
-    ip: session.ip,
-    userAgent: session.userAgent,
-    riskScore: session.riskScore,
+    maskedPassword: maskPassword(session.password),
+    route: session.route,
+    sessionRisk: session.sessionRisk,
+    intentScore: session.intentScore,
+    finalRisk: session.finalRisk,
     riskLevel: session.riskLevel,
-    routedToDecoy: session.routedToDecoy,
-    cveMapping: session.cveMapping ?? null,
-    aiExplanation: session.aiExplanation ?? null,
+    reasons: session.reasons || [],
+    observedIntent: session.observedIntent || "",
+    pagesVisited: [],
+    events: [],
     timestamp: new Date().toISOString(),
   };
   db.sessions.unshift(newSession); // latest first
@@ -88,33 +90,55 @@ export async function logSession(
   return newSession;
 }
 
-export async function logAction(action: Omit<SuspiciousAction, "id" | "timestamp"> & { sessionId: string }) {
+export async function logEvent(
+  sessionId: string,
+  event: { type: string; label: string; isNav?: boolean }
+) {
   const db = await readDB();
-  const newAction: SuspiciousAction = {
-    ...action,
-    id: uuidv4(),
-    timestamp: new Date().toISOString(),
-  };
-  db.actions.push(newAction);
+  const sessionIndex = db.sessions.findIndex((s) => s.sessionId === sessionId);
+  if (sessionIndex === -1) return null;
+
+  const session = db.sessions[sessionIndex];
+  
+  if (event.isNav) {
+    session.pagesVisited.push(event.label);
+  } else {
+    session.events.unshift({
+      type: event.type,
+      label: event.label,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // Calculate new intent score based on event type
+  let intentIncrement = 0;
+  if (event.type.includes("download")) intentIncrement += 20;
+  if (event.type.includes("settings") || event.type.includes("log_entry")) intentIncrement += 10;
+  if (event.type.includes("employee_view")) intentIncrement += 5;
+  if (event.isNav) intentIncrement += 2;
+
+  if (intentIncrement > 0) {
+    session.intentScore += intentIncrement;
+    if (session.intentScore > 100) session.intentScore = 100;
+    
+    // Update final risk dynamically
+    session.finalRisk = Math.min(100, Math.round(session.sessionRisk + session.intentScore * 0.6));
+    
+    if (session.finalRisk >= 70) session.riskLevel = "High";
+    else if (session.finalRisk >= 40) session.riskLevel = "Medium";
+    else session.riskLevel = "Low";
+  }
+
   await writeDB(db);
-  return newAction;
+  return session;
 }
 
-export async function getRecentSessions(): Promise<SessionInfo[]> {
+export async function getRecentSessions(): Promise<Session[]> {
   const db = await readDB();
   return db.sessions;
 }
 
-export async function getActionsForSession(sessionId: string): Promise<SuspiciousAction[]> {
+export async function getSessionById(sessionId: string): Promise<Session | null> {
   const db = await readDB();
-  return db.actions
-    .filter((a) => a.sessionId === sessionId)
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-}
-
-export async function getAllActions(): Promise<SuspiciousAction[]> {
-  const db = await readDB();
-  return db.actions.sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  );
+  return db.sessions.find(s => s.sessionId === sessionId) || null;
 }
